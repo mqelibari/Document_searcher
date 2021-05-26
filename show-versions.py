@@ -1,4 +1,5 @@
 #!/usr/local/bin/python3
+import sys
 from pathlib import Path
 import glob
 import os
@@ -51,9 +52,67 @@ def search_for_var_or_func_in_file(files):
     return var_and_val
 
 
+
+def get_version_func(files):
+    ver_func = []
+    for file in files:
+        try:
+            exec(f"import {file}")
+        except ImportError:
+            print("Could not Import File!")
+
+        try:
+            exec(f"a = {file}.version")
+            if callable(a):
+                exec(f"b = {file}.a()")
+                ver_func.append[file, b]
+            else:
+                exec(f"a = {file}.__dict__['version'])")
+                ver_func.append([file, a])
+        except:
+            print("No version!")
+    return ver_func
+
+def get_var_val(files, version_list):
+    for file in files:
+        if "version" in file.__dict__.keys() and isinstance(file.__dict__["version"], str):
+            version_list.append([file, file.__dict__["version"]])
+
+
+def get_version(files):
+    ver_func = []
+    for file in py_files:
+        try:
+            exec(f"import {file[:-3]}")
+            exec(f"ver = {file[:-3]}.version")
+            if callable(ver):
+                exec(f"b = {file[:-3]}.version()")
+                ver_func.append([file, b])
+            else:
+                exec(f"a = {file[:-3]}.__dict__['version']")
+                ver_func.append([file, a])
+        except ImportError:
+            print("Could not Import File!")
+        return ver_func
+
+
 if __name__ == "__main__":
+    sys.path.insert(0, "/Users/fq/commands")
+    os.chdir("/Users/fq/commands")
     new_work_dir = change_working_dir()
     py_files = get_py_files(new_work_dir)
-    var_and_val = search_for_var_or_func_in_file(py_files)
-    print(var_and_val)
-
+    #var_and_val = search_for_var_or_func_in_file(py_files)
+    ver_func = []
+    for file in py_files:
+        try:
+            exec(f"import {file[:-3]}")
+            exec(f"ver = {file[:-3]}.version")
+            if callable(ver):
+                exec(f"b = {file[:-3]}.version()")
+                ver_func.append([file, b])
+            else:
+                exec(f"a = {file[:-3]}.__dict__['version']")
+                ver_func.append([file, a])
+        except ImportError:
+            print("Could not Import File!")
+    print(ver_func)
