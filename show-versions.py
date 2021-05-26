@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 import glob
 import os
+global ver
 
 
 def change_working_dir():
@@ -53,25 +54,6 @@ def search_for_var_or_func_in_file(files):
 
 
 
-def get_version_func(files):
-    ver_func = []
-    for file in files:
-        try:
-            exec(f"import {file}")
-        except ImportError:
-            print("Could not Import File!")
-
-        try:
-            exec(f"a = {file}.version")
-            if callable(a):
-                exec(f"b = {file}.a()")
-                ver_func.append[file, b]
-            else:
-                exec(f"a = {file}.__dict__['version'])")
-                ver_func.append([file, a])
-        except:
-            print("No version!")
-    return ver_func
 
 def get_var_val(files, version_list):
     for file in files:
@@ -81,19 +63,19 @@ def get_var_val(files, version_list):
 
 def get_version(files):
     ver_func = []
-    for file in py_files:
+    for file in files:
         try:
             exec(f"import {file[:-3]}")
-            exec(f"ver = {file[:-3]}.version")
+            exec(f"global ver; ver  = {file[:-3]}.version")
             if callable(ver):
-                exec(f"b = {file[:-3]}.version()")
-                ver_func.append([file, b])
+                exec(f"global ver; ver = {file[:-3]}.version()")
+                ver_func.append([file, ver])
             else:
-                exec(f"a = {file[:-3]}.__dict__['version']")
-                ver_func.append([file, a])
+                exec(f"global ver; ver = {file[:-3]}.__dict__['version']")
+                ver_func.append([file, ver])
         except ImportError:
             print("Could not Import File!")
-        return ver_func
+    return ver_func
 
 
 if __name__ == "__main__":
@@ -102,17 +84,5 @@ if __name__ == "__main__":
     new_work_dir = change_working_dir()
     py_files = get_py_files(new_work_dir)
     #var_and_val = search_for_var_or_func_in_file(py_files)
-    ver_func = []
-    for file in py_files:
-        try:
-            exec(f"import {file[:-3]}")
-            exec(f"ver = {file[:-3]}.version")
-            if callable(ver):
-                exec(f"b = {file[:-3]}.version()")
-                ver_func.append([file, b])
-            else:
-                exec(f"a = {file[:-3]}.__dict__['version']")
-                ver_func.append([file, a])
-        except ImportError:
-            print("Could not Import File!")
-    print(ver_func)
+    var_and_val = get_version(py_files)
+    print(var_and_val)
